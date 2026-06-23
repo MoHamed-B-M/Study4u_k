@@ -107,7 +107,6 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 
     // Coroutines & Flow
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
@@ -119,7 +118,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Jetpack Glance for Widgets
-    implementation("androidx.glance:glance-appwidget:1.0.0")
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.glance:glance:1.1.1")
 
     // Media3 ExoPlayer for Audio
     implementation("androidx.media3:media3-exoplayer:$media3Version")

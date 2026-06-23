@@ -106,18 +106,21 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         ThemeOption(
+                            modifier = Modifier.weight(1f),
                             label = "System",
                             icon = Icons.Default.BrightnessAuto,
                             isSelected = uiState.themeMode == 0,
                             onClick = { viewModel.updateThemeMode(0) }
                         )
                         ThemeOption(
+                            modifier = Modifier.weight(1f),
                             label = "Light",
                             icon = Icons.Default.LightMode,
                             isSelected = uiState.themeMode == 1,
                             onClick = { viewModel.updateThemeMode(1) }
                         )
                         ThemeOption(
+                            modifier = Modifier.weight(1f),
                             label = "Dark",
                             icon = Icons.Default.DarkMode,
                             isSelected = uiState.themeMode == 2,
@@ -311,13 +314,13 @@ fun SettingsScreen(
 @Composable
 private fun ThemeOption(
     label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier
-            .weight(1f)
+        modifier = modifier
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         color = if (isSelected) MaterialTheme.colorScheme.primaryContainer

@@ -84,10 +84,8 @@ class StatsViewModel @Inject constructor(
             }
 
             // Load screen time for today
-            val today = kotlinx.datetime.Clock.System.now().toLocalDateTime(
-                kotlinx.datetime.TimeZone.currentSystemDefault()
-            )
-            val startOfDay = today.date.toEpochDays().toLong() * 86400000L
+            val today = java.time.LocalDate.now(java.time.ZoneId.systemDefault())
+            val startOfDay = today.toEpochDay() * 86400000L
             screenTimeRepository.getTotalScreenTimeForDate(startOfDay).collect { minutes ->
                 _uiState.update { it.copy(screenTimeMinutes = minutes ?: 0) }
             }

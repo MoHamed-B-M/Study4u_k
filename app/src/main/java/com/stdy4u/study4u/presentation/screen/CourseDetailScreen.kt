@@ -1,5 +1,6 @@
 package com.stdy4u.study4u.presentation.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +29,7 @@ import com.stdy4u.study4u.presentation.viewmodel.CourseDetailViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CourseDetailScreen(
     courseId: String,
@@ -357,7 +358,6 @@ private fun MaterialsTab(
         onClick = { showAddSheet = true },
         containerColor = MaterialTheme.colorScheme.primary,
         modifier = Modifier
-            .align(Alignment.BottomEnd)
             .padding(20.dp)
     ) {
         Icon(Icons.Default.Add, contentDescription = "Add Material")

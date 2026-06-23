@@ -214,7 +214,7 @@ fun CircularProgressRing(
                     progressColor,
                     progressColor.copy(alpha = 0.8f)
                 ),
-                center = Offset(size.width / 2, size.height / 2)
+                center = Offset(this.size.width / 2, this.size.height / 2)
             )
 
             drawArc(
