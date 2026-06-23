@@ -11,6 +11,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
 
 private val LightColorScheme = lightColorScheme(
     primary = LightPrimary,
@@ -98,9 +102,18 @@ fun Study4UTheme(
         }
     }
 
+    val shapes = remember {
+        Shapes(
+            small = RoundedCornerShape(12.dp),
+            medium = RoundedCornerShape(20.dp),
+            large = RoundedCornerShape(28.dp)
+        )
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = shapes,
         content = content
     )
 }

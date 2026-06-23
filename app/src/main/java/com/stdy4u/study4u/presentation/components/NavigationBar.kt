@@ -1,8 +1,9 @@
 package com.stdy4u.study4u.presentation.components
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,80 +14,77 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.stdy4u.study4u.presentation.navigation.Screen
 
 @Composable
-fun AppBottomNavBar(
+fun FloatingNavBar(
     currentRoute: String?,
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val selectedIndex = Screen.bottomNavItems.indexOfFirst { it.route == currentRoute }
+        .coerceAtLeast(0)
+
+    val indicatorOffset by animateDpAsState(
+        targetValue = selectedIndex * (56.dp + 8.dp),
+        animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f),
+        label = "indicatorOffset"
+    )
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(28.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-        tonalElevation = 8.dp,
-        shadowElevation = 16.dp
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(32.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f),
+        tonalElevation = 12.dp,
+        shadowElevation = 24.dp
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(6.dp)
         ) {
-            Screen.bottomNavItems.forEach { screen ->
-                val isSelected = currentRoute == screen.route
-                val animatedScale by animateFloatAsState(
-                    targetValue = if (isSelected) 1.1f else 1.0f,
-                    animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
-                    label = "scale"
-                )
+            Box(
+                modifier = Modifier
+                    .offset(x = indicatorOffset)
+                    .size(width = 56.dp, height = 56.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
+            )
 
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .scale(animatedScale)
-                        .background(
-                            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                            else Color.Transparent
-                        )
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { onNavigate(screen.route) }
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Screen.bottomNavItems.forEach { screen ->
+                    val isSelected = currentRoute == screen.route
+                    val iconTint by animateColorAsState(
+                        targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+                                     else MaterialTheme.colorScheme.onSurfaceVariant,
+                        animationSpec = tween(200),
+                        label = "iconTint"
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { onNavigate(screen.route) },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = screen.icon,
                             contentDescription = screen.label,
-                            tint = if (isSelected) MaterialTheme.colorScheme.primary
-                                   else MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(22.dp)
+                            tint = iconTint,
+                            modifier = Modifier.size(24.dp)
                         )
-                        AnimatedVisibility(
-                            visible = isSelected,
-                            enter = fadeIn() + expandHorizontally(),
-                            exit = fadeOut() + shrinkHorizontally()
-                        ) {
-                            Text(
-                                text = screen.label,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
                     }
                 }
             }

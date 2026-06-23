@@ -2,9 +2,12 @@ package com.stdy4u.study4u.presentation.navigation
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -15,7 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.stdy4u.study4u.presentation.components.AppBottomNavBar
+import com.stdy4u.study4u.presentation.components.FloatingNavBar
+import com.stdy4u.study4u.presentation.components.UserNameDialog
 import com.stdy4u.study4u.presentation.screen.*
 import com.stdy4u.study4u.presentation.viewmodel.SplashViewModel
 
@@ -28,29 +32,18 @@ fun AppNavigation() {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val showBottomBar = currentRoute in bottomNavRoutes
-
-    Scaffold(
-        bottomBar = {
-            AnimatedVisibility(
-                visible = showBottomBar,
-                enter = slideInVertically(animationSpec = tween(300)) { it },
-                exit = slideOutVertically(animationSpec = tween(300)) { it }
-            ) {
-                AppBottomNavBar(
-                    currentRoute = currentRoute,
-                    onNavigate = { route ->
-                        navController.navigate(route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                )
+    val navigate: (String) -> Unit = { route ->
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
             }
+            launchSingleTop = true
+            restoreState = true
         }
-    ) { innerPadding ->
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Screen.SPLASH,
@@ -78,10 +71,22 @@ fun AppNavigation() {
 
             composable(Screen.MORPHING_ONBOARDING) {
                 val splashVm: SplashViewModel = hiltViewModel()
+                var showNameDialog by remember { mutableStateOf(false) }
+
+                if (showNameDialog) {
+                    UserNameDialog(
+                        onConfirm = { name ->
+                            splashVm.saveUserName(name)
+                            showNameDialog = false
+                            navController.navigate(Screen.Home.route) { popUpTo(Screen.MORPHING_ONBOARDING) { inclusive = true } }
+                        }
+                    )
+                }
+
                 MorphingOnboardingScreen(
                     onComplete = {
                         splashVm.finishOnboarding()
-                        navController.navigate(Screen.Home.route) { popUpTo(Screen.MORPHING_ONBOARDING) { inclusive = true } }
+                        showNameDialog = true
                     }
                 )
             }
@@ -121,6 +126,19 @@ fun AppNavigation() {
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
+        }
+    }
+
+        AnimatedVisibility(
+            visible = showBottomBar,
+            enter = slideInVertically(animationSpec = tween(300)) { it },
+            exit = slideOutVertically(animationSpec = tween(300)) { it },
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            FloatingNavBar(
+                currentRoute = currentRoute,
+                onNavigate = navigate
+            )
         }
     }
 }

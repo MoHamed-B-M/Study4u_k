@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +50,7 @@ fun HomeScreen(
             .padding(horizontal = 20.dp)
             .padding(top = 48.dp, bottom = 80.dp)
     ) {
-        // Header
+        // Header with avatar
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -58,7 +59,7 @@ fun HomeScreen(
             Column {
                 val greeting = getGreeting()
                 Text(
-                    text = "$greeting, ${uiState.userName.ifEmpty { "Student" }}! \uD83D\uDC4B",
+                    text = "$greeting, ${uiState.userName.ifEmpty { "Student" }} \uD83D\uDC4B",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -68,13 +69,10 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.outline
                 )
             }
-            IconButton(onClick = onNavigateToSettings) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Avatar(
+                name = uiState.userName.ifEmpty { "Student" },
+                onClick = onNavigateToSettings
+            )
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -89,9 +87,7 @@ fun HomeScreen(
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
@@ -135,11 +131,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            AppCard(
-                modifier = Modifier.weight(1f),
-                cardStyle = CardStyle.Solid,
-                onClick = null
-            ) {
+            DashboardCard(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "CGPA",
                     style = MaterialTheme.typography.labelSmall,
@@ -160,11 +152,7 @@ fun HomeScreen(
                 }
             }
 
-            AppCard(
-                modifier = Modifier.weight(1f),
-                cardStyle = CardStyle.Solid,
-                onClick = null
-            ) {
+            DashboardCard(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Attendance",
                     style = MaterialTheme.typography.labelSmall,
@@ -185,78 +173,94 @@ fun HomeScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Pending Tasks
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Tasks Due",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            if (uiState.pendingTaskCount > 3) {
-                Text(
-                    text = "+${uiState.pendingTaskCount - 3} more",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (uiState.pendingTasks.isEmpty()) {
-            EmptyStateView(
-                title = "No pending tasks",
-                subtitle = "You're all caught up!"
-            )
-        } else {
-            uiState.pendingTasks.forEach { task ->
-                TaskItem(
-                    task = task,
-                    onToggle = { viewModel.toggleTaskCompletion(task.id, !task.isCompleted) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Course List
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "My Courses",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (uiState.courses.isEmpty()) {
-            EmptyStateView(
-                title = "No courses yet",
-                subtitle = "Tap the + button to add your first course"
-            )
-        } else {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.courses) { course ->
-                    CourseCard(
-                        course = course,
-                        onClick = { onNavigateToCourseDetail(course.id) }
+        // Courses section
+        DashboardSection(
+            title = "Courses",
+            trailing = {
+                FilledTonalButton(
+                    onClick = { onNavigateToCourseDetail("") },
+                    shape = RoundedCornerShape(16.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Add New",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
+        ) {
+            if (uiState.courses.isEmpty()) {
+                EmptyTaskCard()
+            } else {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(uiState.courses) { course ->
+                        CourseCard(
+                            course = course,
+                            onClick = { onNavigateToCourseDetail(course.id) }
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Due Tasks section
+        DashboardSection(title = "Due Tasks") {
+            if (uiState.pendingTasks.isEmpty()) {
+                EmptyTaskCard()
+            } else {
+                uiState.pendingTasks.forEach { task ->
+                    TaskItem(
+                        task = task,
+                        onToggle = { viewModel.toggleTaskCompletion(task.id, !task.isCompleted) }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Avatar(
+    name: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val initials = name
+        .split(" ")
+        .filter { it.isNotBlank() }
+        .take(2)
+        .joinToString("") { it.first().uppercase() }
+        .ifEmpty { "?" }
+
+    Surface(
+        modifier = modifier
+            .size(44.dp)
+            .clickable(onClick = onClick),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        tonalElevation = 2.dp
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = initials,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }
@@ -266,11 +270,11 @@ fun TaskItem(
     task: StudyTask,
     onToggle: () -> Unit
 ) {
-    Surface(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 1.dp
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
             modifier = Modifier
@@ -330,13 +334,11 @@ fun CourseCard(
         modifier = Modifier
             .width(200.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(24.dp),
         color = Color(course.colorValue).copy(alpha = 0.15f),
         tonalElevation = 2.dp
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier
                     .size(40.dp)

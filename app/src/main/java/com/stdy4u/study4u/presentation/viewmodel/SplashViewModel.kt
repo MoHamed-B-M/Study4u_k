@@ -31,4 +31,10 @@ class SplashViewModel @Inject constructor(
             settingsRepository.updateOnboardingComplete(true)
         }
     }
+
+    fun saveUserName(name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsRepository.updateUserName(name)
+        }
+    }
 }
