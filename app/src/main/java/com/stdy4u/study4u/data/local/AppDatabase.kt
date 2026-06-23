@@ -2,6 +2,8 @@ package com.stdy4u.study4u.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+
 @Database(
     entities = [
         CourseEntity::class,
