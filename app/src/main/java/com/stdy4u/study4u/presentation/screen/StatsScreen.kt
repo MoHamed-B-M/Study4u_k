@@ -4,6 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -40,107 +41,143 @@ fun StatsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 20.dp, end = 20.dp, top = 48.dp, bottom = 80.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Statistics",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                IconButton(onClick = onNavigateToSettings) {
-                    Icon(Icons.Default.Settings, contentDescription = "Settings")
-                }
-            }
-        }
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isWideScreen = maxWidth > 600.dp
+        val horizontalPadding = 20.dp
 
-        // CGPA Card
-        item {
-            AppCard(cardStyle = CardStyle.Gradient, gradientColors = listOf(
-                MaterialTheme.colorScheme.primary,
-                MaterialTheme.colorScheme.tertiary
-            )) {
-                Column(
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = horizontalPadding, end = horizontalPadding, top = 48.dp, bottom = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = uiState.cgpaResult.letterGrade,
-                        fontSize = 48.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        text = "Statistics",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
                     )
-                    AnimatedCounter(
-                        targetValue = uiState.cgpaResult.cgpa.toFloat(),
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        text = "Current CGPA",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                    )
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    }
                 }
             }
-        }
 
-        // Performance Bar Chart
-        item {
-            AppCard(cardStyle = CardStyle.Solid) {
+            // CGPA Card
+            item {
+                AppCard(cardStyle = CardStyle.Gradient, gradientColors = listOf(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.tertiary
+                )) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = uiState.cgpaResult.letterGrade,
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        AnimatedCounter(
+                            targetValue = uiState.cgpaResult.cgpa.toFloat(),
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = "Current CGPA",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
+
+            // Performance Bar Chart (responsive: wide = side by side, narrow = stacked)
+            item {
+                DashboardCard {
+                    Text(
+                        text = "Course Performance",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    if (isWideScreen) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            uiState.courses.forEach { course ->
+                                CoursePerformanceBar(
+                                    course = course,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                    } else {
+                        uiState.courses.forEach { course ->
+                            CoursePerformanceBar(
+                                course = course,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Pomodoro Timer Card
+            item {
+                PomodoroCard(
+                    state = uiState.pomodoroState,
+                    secondsLeft = uiState.pomodoroSecondsLeft,
+                    isRunning = uiState.isTimerRunning,
+                    completedSessions = uiState.completedSessions,
+                    onStart = { viewModel.startPomodoro() },
+                    onPause = { viewModel.pausePomodoro() },
+                    onReset = { viewModel.resetPomodoro() }
+                )
+            }
+
+            // Subject Performance Summary (responsive)
+            item {
                 Text(
-                    text = "Course Performance",
-                    style = MaterialTheme.typography.titleSmall,
+                    text = "Subject Performance",
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-                uiState.courses.forEach { course ->
-                    CoursePerformanceBar(
-                        course = course,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp)
-                    )
+            if (isWideScreen && uiState.courses.size > 2) {
+                val chunked = uiState.courses.chunked(2)
+                items(chunked) { chunk ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        chunk.forEach { course ->
+                            SubjectPerformanceItem(
+                                course = course,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+            } else {
+                items(uiState.courses) { course ->
+                    SubjectPerformanceItem(course = course)
                 }
             }
-        }
 
-        // Pomodoro Timer Card
-        item {
-            PomodoroCard(
-                state = uiState.pomodoroState,
-                secondsLeft = uiState.pomodoroSecondsLeft,
-                isRunning = uiState.isTimerRunning,
-                completedSessions = uiState.completedSessions,
-                onStart = { viewModel.startPomodoro() },
-                onPause = { viewModel.pausePomodoro() },
-                onReset = { viewModel.resetPomodoro() }
-            )
+            item { Spacer(modifier = Modifier.height(80.dp)) }
         }
-
-        // Subject Performance Summary
-        item {
-            Text(
-                text = "Subject Performance",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        items(uiState.courses) { course ->
-            SubjectPerformanceItem(course = course)
-        }
-
-        item { Spacer(modifier = Modifier.height(80.dp)) }
     }
 
     // Handle timer events
@@ -249,7 +286,7 @@ private fun PomodoroCard(
     onPause: () -> Unit,
     onReset: () -> Unit
 ) {
-    AppCard(cardStyle = CardStyle.Solid) {
+    DashboardCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -373,7 +410,7 @@ private fun PomodoroCard(
 }
 
 @Composable
-private fun SubjectPerformanceItem(course: Course) {
+private fun SubjectPerformanceItem(course: Course, modifier: Modifier = Modifier) {
     val progress by animateFloatAsState(
         targetValue = (course.currentGrade / 4.0).toFloat(),
         animationSpec = tween(1000),
@@ -381,7 +418,7 @@ private fun SubjectPerformanceItem(course: Course) {
     )
 
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 1.dp

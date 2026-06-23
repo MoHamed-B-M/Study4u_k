@@ -15,22 +15,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.stdy4u.study4u.presentation.components.BubbleNavBar
+import com.stdy4u.study4u.presentation.components.AppBottomNavBar
 import com.stdy4u.study4u.presentation.screen.*
 
-object Routes {
-    const val HOME = "home"
-    const val TRACKER = "tracker"
-    const val STATS = "stats"
-    const val SETTINGS = "settings"
-    const val COURSE_DETAIL = "courseDetail/{courseId}"
-    const val SPLASH = "splash"
-    const val ONBOARDING = "onboarding"
-
-    fun courseDetail(courseId: String) = "courseDetail/$courseId"
-}
-
-val bottomNavItems = listOf(Routes.HOME, Routes.TRACKER, Routes.STATS)
+private val bottomNavRoutes = Screen.bottomNavItems.map { it.route }
 
 @Composable
 fun AppNavigation() {
@@ -38,7 +26,7 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute in listOf(Routes.HOME, Routes.TRACKER, Routes.STATS)
+    val showBottomBar = currentRoute in bottomNavRoutes
 
     Scaffold(
         bottomBar = {
@@ -47,7 +35,7 @@ fun AppNavigation() {
                 enter = slideInVertically(animationSpec = tween(300)) { it },
                 exit = slideOutVertically(animationSpec = tween(300)) { it }
             ) {
-                BubbleNavBar(
+                AppBottomNavBar(
                     currentRoute = currentRoute,
                     onNavigate = { route ->
                         navController.navigate(route) {
@@ -64,7 +52,7 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.SPLASH,
+            startDestination = Screen.SPLASH,
             modifier = Modifier.padding(innerPadding),
             enterTransition = {
                 fadeIn(animationSpec = tween(300)) +
@@ -74,40 +62,40 @@ fun AppNavigation() {
                 fadeOut(animationSpec = tween(300))
             }
         ) {
-            composable(Routes.SPLASH) {
+            composable(Screen.SPLASH) {
                 SplashScreen(
-                    onNavigateToHome = { navController.navigate(Routes.HOME) { popUpTo(Routes.SPLASH) { inclusive = true } } },
-                    onNavigateToOnboarding = { navController.navigate(Routes.ONBOARDING) { popUpTo(Routes.SPLASH) { inclusive = true } } }
+                    onNavigateToHome = { navController.navigate(Screen.Home.route) { popUpTo(Screen.SPLASH) { inclusive = true } } },
+                    onNavigateToOnboarding = { navController.navigate(Screen.ONBOARDING) { popUpTo(Screen.SPLASH) { inclusive = true } } }
                 )
             }
 
-            composable(Routes.ONBOARDING) {
+            composable(Screen.ONBOARDING) {
                 FeaturePreviewScreen(
-                    onComplete = { navController.navigate(Routes.HOME) { popUpTo(Routes.ONBOARDING) { inclusive = true } } }
+                    onComplete = { navController.navigate(Screen.Home.route) { popUpTo(Screen.ONBOARDING) { inclusive = true } } }
                 )
             }
 
-            composable(Routes.HOME) {
+            composable(Screen.Home.route) {
                 HomeScreen(
                     onNavigateToCourseDetail = { courseId ->
-                        navController.navigate(Routes.courseDetail(courseId))
+                        navController.navigate(Screen.courseDetail(courseId))
                     },
-                    onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
+                    onNavigateToSettings = { navController.navigate(Screen.SETTINGS) }
                 )
             }
 
-            composable(Routes.TRACKER) {
+            composable(Screen.Tracker.route) {
                 TrackerScreen()
             }
 
-            composable(Routes.STATS) {
+            composable(Screen.Stats.route) {
                 StatsScreen(
-                    onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
+                    onNavigateToSettings = { navController.navigate(Screen.SETTINGS) }
                 )
             }
 
             composable(
-                route = Routes.COURSE_DETAIL,
+                route = Screen.COURSE_DETAIL,
                 arguments = listOf(navArgument("courseId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val courseId = backStackEntry.arguments?.getString("courseId") ?: return@composable
@@ -117,7 +105,7 @@ fun AppNavigation() {
                 )
             }
 
-            composable(Routes.SETTINGS) {
+            composable(Screen.SETTINGS) {
                 SettingsScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )

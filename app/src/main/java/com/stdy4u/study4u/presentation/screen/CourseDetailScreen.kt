@@ -332,35 +332,38 @@ private fun MaterialsTab(
 ) {
     var showAddSheet by remember { mutableStateOf(false) }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        if (materials.isEmpty()) {
-            item {
-                EmptyStateView(
-                    title = "No materials yet",
-                    subtitle = "Add your first material"
-                )
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (materials.isEmpty()) {
+                item {
+                    EmptyStateView(
+                        title = "No materials yet",
+                        subtitle = "Add your first material"
+                    )
+                }
+            } else {
+                items(materials) { material ->
+                    MaterialItem(material = material, onDelete = { onDeleteMaterial(material.id) })
+                }
             }
-        } else {
-            items(materials) { material ->
-                MaterialItem(material = material, onDelete = { onDeleteMaterial(material.id) })
-            }
+
+            item { Spacer(modifier = Modifier.height(80.dp)) }
         }
 
-        item { Spacer(modifier = Modifier.height(80.dp)) }
-    }
-
-    // FAB
-    FloatingActionButton(
-        onClick = { showAddSheet = true },
-        containerColor = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .padding(20.dp)
-    ) {
-        Icon(Icons.Default.Add, contentDescription = "Add Material")
+        // FAB
+        FloatingActionButton(
+            onClick = { showAddSheet = true },
+            containerColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Add Material")
+        }
     }
 
     if (showAddSheet) {
