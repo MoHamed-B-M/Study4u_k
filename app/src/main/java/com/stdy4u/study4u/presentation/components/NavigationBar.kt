@@ -29,7 +29,7 @@ fun FloatingNavBar(
         .coerceAtLeast(0)
 
     val indicatorOffset by animateDpAsState(
-        targetValue = selectedIndex * (56.dp + 8.dp),
+        targetValue = (56.dp + 8.dp) * selectedIndex.toFloat(),
         animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f),
         label = "indicatorOffset"
     )
