@@ -27,17 +27,17 @@ fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
-    val onboardingComplete by viewModel.onboardingComplete.collectAsState()
+    val isFirstLaunch by viewModel.isFirstLaunch.collectAsState()
     var startAnimation by remember { mutableStateOf(false) }
 
-    LaunchedEffect(onboardingComplete) {
-        if (onboardingComplete == null) return@LaunchedEffect
+    LaunchedEffect(isFirstLaunch) {
+        if (isFirstLaunch == null) return@LaunchedEffect
         startAnimation = true
-        delay(2800)
-        if (onboardingComplete == true) {
-            onNavigateToHome()
-        } else {
+        delay(2000)
+        if (isFirstLaunch == true) {
             onNavigateToOnboarding()
+        } else {
+            onNavigateToHome()
         }
     }
 
@@ -61,7 +61,6 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Book icon from ASCII/Unicode
             Text(
                 text = "\uD83D\uDCDA",
                 fontSize = 64.sp

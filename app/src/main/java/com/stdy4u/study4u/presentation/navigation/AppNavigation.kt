@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,7 +18,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.stdy4u.study4u.presentation.components.FloatingNavBar
-import com.stdy4u.study4u.presentation.components.UserNameDialog
 import com.stdy4u.study4u.presentation.screen.*
 import com.stdy4u.study4u.presentation.viewmodel.SplashViewModel
 
@@ -44,90 +42,78 @@ fun AppNavigation() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.SPLASH,
-            modifier = Modifier.padding(innerPadding),
-            enterTransition = {
-                fadeIn(animationSpec = tween(300)) +
-                        slideInHorizontally(animationSpec = tween(300)) { it / 4 }
-            },
-            exitTransition = {
-                fadeOut(animationSpec = tween(300))
-            }
-        ) {
-            composable(Screen.SPLASH) {
-                SplashScreen(
-                    onNavigateToHome = { navController.navigate(Screen.Home.route) { popUpTo(Screen.SPLASH) { inclusive = true } } },
-                    onNavigateToOnboarding = { navController.navigate(Screen.MORPHING_ONBOARDING) { popUpTo(Screen.SPLASH) { inclusive = true } } }
-                )
-            }
+            NavHost(
+                navController = navController,
+                startDestination = Screen.SPLASH,
+                modifier = Modifier.padding(innerPadding),
+                enterTransition = {
+                    fadeIn(animationSpec = tween(300)) +
+                            slideInHorizontally(animationSpec = tween(300)) { it / 4 }
+                },
+                exitTransition = {
+                    fadeOut(animationSpec = tween(300))
+                }
+            ) {
+                composable(Screen.SPLASH) {
+                    SplashScreen(
+                        onNavigateToHome = { navController.navigate(Screen.Home.route) { popUpTo(Screen.SPLASH) { inclusive = true } } },
+                        onNavigateToOnboarding = { navController.navigate(Screen.ONBOARDING) { popUpTo(Screen.SPLASH) { inclusive = true } } }
+                    )
+                }
 
-            composable(Screen.ONBOARDING) {
-                FeaturePreviewScreen(
-                    onComplete = { navController.navigate(Screen.Home.route) { popUpTo(Screen.ONBOARDING) { inclusive = true } } }
-                )
-            }
-
-            composable(Screen.MORPHING_ONBOARDING) {
-                val splashVm: SplashViewModel = hiltViewModel()
-                var showNameDialog by remember { mutableStateOf(false) }
-
-                if (showNameDialog) {
-                    UserNameDialog(
-                        onConfirm = { name ->
-                            splashVm.saveUserName(name)
-                            showNameDialog = false
-                            navController.navigate(Screen.Home.route) { popUpTo(Screen.MORPHING_ONBOARDING) { inclusive = true } }
+                composable(Screen.ONBOARDING) {
+                    val splashVm: SplashViewModel = hiltViewModel()
+                    OnboardingScreen(
+                        onComplete = { name ->
+                            splashVm.completeOnboarding(name)
+                            navController.navigate(Screen.Home.route) { popUpTo(Screen.ONBOARDING) { inclusive = true } }
                         }
                     )
                 }
 
-                MorphingOnboardingScreen(
-                    onComplete = {
-                        splashVm.finishOnboarding()
-                        showNameDialog = true
-                    }
-                )
-            }
+                composable(Screen.MORPHING_ONBOARDING) {
+                    MorphingOnboardingScreen(
+                        onComplete = { navController.navigate(Screen.Home.route) { popUpTo(Screen.MORPHING_ONBOARDING) { inclusive = true } } }
+                    )
+                }
 
-            composable(Screen.Home.route) {
-                HomeScreen(
-                    onNavigateToCourseDetail = { courseId ->
-                        navController.navigate(Screen.courseDetail(courseId))
-                    },
-                    onNavigateToSettings = { navController.navigate(Screen.SETTINGS) }
-                )
-            }
+                composable(Screen.Home.route) {
+                    HomeScreen(
+                        onNavigateToCourseDetail = { courseId ->
+                            navController.navigate(Screen.courseDetail(courseId))
+                        },
+                        onNavigateToSettings = { navController.navigate(Screen.SETTINGS) }
+                    )
+                }
 
-            composable(Screen.Tracker.route) {
-                TrackerScreen()
-            }
+                composable(Screen.Tracker.route) {
+                    TrackerScreen()
+                }
 
-            composable(Screen.Stats.route) {
-                StatsScreen(
-                    onNavigateToSettings = { navController.navigate(Screen.SETTINGS) }
-                )
-            }
+                composable(Screen.Stats.route) {
+                    StatsScreen(
+                        onNavigateToSettings = { navController.navigate(Screen.SETTINGS) }
+                    )
+                }
 
-            composable(
-                route = Screen.COURSE_DETAIL,
-                arguments = listOf(navArgument("courseId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val courseId = backStackEntry.arguments?.getString("courseId") ?: return@composable
-                CourseDetailScreen(
-                    courseId = courseId,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
+                composable(
+                    route = Screen.COURSE_DETAIL,
+                    arguments = listOf(navArgument("courseId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val courseId = backStackEntry.arguments?.getString("courseId") ?: return@composable
+                    CourseDetailScreen(
+                        courseId = courseId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
 
-            composable(Screen.SETTINGS) {
-                SettingsScreen(
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                composable(Screen.SETTINGS) {
+                    SettingsScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
-    }
 
         AnimatedVisibility(
             visible = showBottomBar,

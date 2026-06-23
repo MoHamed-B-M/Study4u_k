@@ -181,7 +181,7 @@ fun HomeScreen(
             trailing = {
                 FilledTonalButton(
                     onClick = { onNavigateToCourseDetail("") },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Icon(
@@ -189,7 +189,7 @@ fun HomeScreen(
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "Add New",
                         style = MaterialTheme.typography.labelMedium,
