@@ -6,30 +6,16 @@ import androidx.glance.GlanceModifier
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.provideContent
-import androidx.glance.background
 import androidx.glance.layout.Column
-import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.padding
 import androidx.glance.text.Text
-import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
-import androidx.glance.unit.Dp
 
 class StudyWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             Column(
-                modifier = GlanceModifier
-                    .fillMaxSize()
-                    .padding(Dp(12f))
-                    .background(ColorProvider(0xFF1B5E3B.toInt())),
+                modifier = GlanceModifier,
             ) {
-                Text(
-                    text = "STUDY4U",
-                    style = TextStyle(
-                        color = ColorProvider(0xFFFFFFFF.toInt()),
-                    )
-                )
+                Text(text = "STUDY4U")
             }
         }
     }
