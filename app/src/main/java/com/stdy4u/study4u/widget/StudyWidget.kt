@@ -13,8 +13,7 @@ import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import androidx.glance.unit.dp
-import androidx.glance.unit.sp
+import androidx.glance.unit.Dp
 
 class StudyWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -22,7 +21,7 @@ class StudyWidget : GlanceAppWidget() {
             Column(
                 modifier = GlanceModifier
                     .fillMaxSize()
-                    .padding(12.dp)
+                    .padding(Dp(12f))
                     .background(ColorProvider(0xFF1B5E3B.toInt())),
             ) {
                 Text(
