@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.stdy4u.study4u.presentation.components.AppBottomNavBar
 import com.stdy4u.study4u.presentation.screen.*
+import com.stdy4u.study4u.presentation.viewmodel.SplashViewModel
 
 private val bottomNavRoutes = Screen.bottomNavItems.map { it.route }
 
@@ -65,13 +66,23 @@ fun AppNavigation() {
             composable(Screen.SPLASH) {
                 SplashScreen(
                     onNavigateToHome = { navController.navigate(Screen.Home.route) { popUpTo(Screen.SPLASH) { inclusive = true } } },
-                    onNavigateToOnboarding = { navController.navigate(Screen.ONBOARDING) { popUpTo(Screen.SPLASH) { inclusive = true } } }
+                    onNavigateToOnboarding = { navController.navigate(Screen.MORPHING_ONBOARDING) { popUpTo(Screen.SPLASH) { inclusive = true } } }
                 )
             }
 
             composable(Screen.ONBOARDING) {
                 FeaturePreviewScreen(
                     onComplete = { navController.navigate(Screen.Home.route) { popUpTo(Screen.ONBOARDING) { inclusive = true } } }
+                )
+            }
+
+            composable(Screen.MORPHING_ONBOARDING) {
+                val splashVm: SplashViewModel = hiltViewModel()
+                MorphingOnboardingScreen(
+                    onComplete = {
+                        splashVm.finishOnboarding()
+                        navController.navigate(Screen.Home.route) { popUpTo(Screen.MORPHING_ONBOARDING) { inclusive = true } }
+                    }
                 )
             }
 

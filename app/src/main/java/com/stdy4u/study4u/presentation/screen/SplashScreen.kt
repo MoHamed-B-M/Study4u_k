@@ -15,21 +15,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.stdy4u.study4u.presentation.theme.SplashBackground
 import com.stdy4u.study4u.presentation.theme.SplashGreenGlow
+import com.stdy4u.study4u.presentation.viewmodel.SplashViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
     onNavigateToHome: () -> Unit,
-    onNavigateToOnboarding: () -> Unit
+    onNavigateToOnboarding: () -> Unit,
+    viewModel: SplashViewModel = hiltViewModel()
 ) {
+    val onboardingComplete by viewModel.onboardingComplete.collectAsState()
     var startAnimation by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(onboardingComplete) {
+        if (onboardingComplete == null) return@LaunchedEffect
         startAnimation = true
         delay(2800)
-        onNavigateToHome()
+        if (onboardingComplete == true) {
+            onNavigateToHome()
+        } else {
+            onNavigateToOnboarding()
+        }
     }
 
     Box(

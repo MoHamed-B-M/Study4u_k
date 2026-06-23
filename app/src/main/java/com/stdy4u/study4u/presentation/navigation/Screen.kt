@@ -20,6 +20,7 @@ sealed class Screen(
         const val COURSE_DETAIL = "courseDetail/{courseId}"
         const val SPLASH = "splash"
         const val ONBOARDING = "onboarding"
+        const val MORPHING_ONBOARDING = "morphing_onboarding"
 
         fun courseDetail(courseId: String) = "courseDetail/$courseId"
 

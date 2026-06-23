@@ -39,7 +39,7 @@ fun CircularProgress(
     ) {
         Canvas(modifier = Modifier.size(size)) {
             val stroke = strokeWidth.toPx()
-            val outerRadius = (size.minDimension - stroke) / 2
+            val outerRadius = (this.size.minDimension - stroke) / 2
             val topLeft = Offset(
                 (this.size.width - outerRadius * 2) / 2,
                 (this.size.height - outerRadius * 2) / 2
