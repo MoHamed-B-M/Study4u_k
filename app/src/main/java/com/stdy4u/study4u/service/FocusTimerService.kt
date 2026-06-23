@@ -162,7 +162,7 @@ class FocusTimerService : Service() {
 
     private fun playCompletionSound() {
         try {
-            mediaPlayer = MediaPlayer.create(this, android.provider.Settings.System.NOTIFICATION_SOUND)
+            mediaPlayer = MediaPlayer.create(this, android.provider.Settings.System.DEFAULT_NOTIFICATION_URI)
             mediaPlayer?.setVolume(0.5f, 0.5f)
             mediaPlayer?.start()
             mediaPlayer?.setOnCompletionListener { it.release() }

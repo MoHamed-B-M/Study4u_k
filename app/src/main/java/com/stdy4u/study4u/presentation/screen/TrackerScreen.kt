@@ -37,7 +37,7 @@ fun TrackerScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp, verticalTop = 48.dp, verticalBottom = 80.dp),
+            .padding(start = 20.dp, end = 20.dp, top = 48.dp, bottom = 80.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {

@@ -357,8 +357,8 @@ private fun MaterialsTab(
         onClick = { showAddSheet = true },
         containerColor = MaterialTheme.colorScheme.primary,
         modifier = Modifier
-            .padding(20.dp)
             .align(Alignment.BottomEnd)
+            .padding(20.dp)
     ) {
         Icon(Icons.Default.Add, contentDescription = "Add Material")
     }

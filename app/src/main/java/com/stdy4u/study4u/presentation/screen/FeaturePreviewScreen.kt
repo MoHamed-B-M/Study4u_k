@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.ExperimentalFoundationApi
 import com.stdy4u.study4u.presentation.components.SquishButton
 import com.stdy4u.study4u.presentation.theme.SplashBackground
 import com.stdy4u.study4u.presentation.theme.SplashGreenGlow
@@ -46,6 +47,7 @@ val featurePages = listOf(
     )
 )
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeaturePreviewScreen(
     onComplete: () -> Unit

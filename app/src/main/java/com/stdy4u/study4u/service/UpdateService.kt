@@ -72,7 +72,7 @@ class UpdateService : IntentService("UpdateService") {
         val notification = NotificationCompat.Builder(this, Study4UApplication.CHANNEL_APP_UPDATES)
             .setContentTitle("STUDY4U Update")
             .setContentText(message)
-            .setSmallIcon(android.R.drawable.ic_menu_download)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentIntent(openIntent)
             .setProgress(100, progress, false)
             .build()

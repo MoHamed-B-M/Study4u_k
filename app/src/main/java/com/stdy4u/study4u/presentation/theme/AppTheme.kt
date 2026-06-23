@@ -10,8 +10,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.materialkolor.DynamicMaterialColors
-import com.materialkolor.rememberDynamicMaterialColors
 
 private val LightColorScheme = lightColorScheme(
     primary = LightPrimary,
@@ -68,6 +66,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
+@Suppress("UNUSED_PARAMETER")
 fun Study4UTheme(
     themeMode: Int = 0,
     seedColor: Color? = null,
@@ -80,12 +79,8 @@ fun Study4UTheme(
         else -> isSystemInDarkTheme()
     }
 
-    val colorScheme = if (dynamicColor && seedColor != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val dynamicColors = rememberDynamicMaterialColors(
-            seedColor = seedColor,
-            isDark = darkTheme
-        )
-        if (darkTheme) dynamicColors.toDarkColorScheme() else dynamicColors.toLightColorScheme()
+    val colorScheme = if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (darkTheme) dynamicDarkColorScheme() else dynamicLightColorScheme()
     } else if (darkTheme) {
         DarkColorScheme
     } else {
@@ -107,27 +102,3 @@ fun Study4UTheme(
         content = content
     )
 }
-
-private fun DynamicMaterialColors.toLightColorScheme() = lightColorScheme(
-    primary = primary, onPrimary = onPrimary, primaryContainer = primaryContainer,
-    onPrimaryContainer = onPrimaryContainer, secondary = secondary, onSecondary = onSecondary,
-    secondaryContainer = secondaryContainer, onSecondaryContainer = onSecondaryContainer,
-    tertiary = tertiary, onTertiary = onTertiary, tertiaryContainer = tertiaryContainer,
-    onTertiaryContainer = onTertiaryContainer, error = error, onError = onError,
-    errorContainer = errorContainer, onErrorContainer = onErrorContainer,
-    background = background, onBackground = onBackground, surface = surface,
-    onSurface = onSurface, surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
-    outline = outline, outlineVariant = outlineVariant
-)
-
-private fun DynamicMaterialColors.toDarkColorScheme() = darkColorScheme(
-    primary = primary, onPrimary = onPrimary, primaryContainer = primaryContainer,
-    onPrimaryContainer = onPrimaryContainer, secondary = secondary, onSecondary = onSecondary,
-    secondaryContainer = secondaryContainer, onSecondaryContainer = onSecondaryContainer,
-    tertiary = tertiary, onTertiary = onTertiary, tertiaryContainer = tertiaryContainer,
-    onTertiaryContainer = onTertiaryContainer, error = error, onError = onError,
-    errorContainer = errorContainer, onErrorContainer = onErrorContainer,
-    background = background, onBackground = onBackground, surface = surface,
-    onSurface = onSurface, surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
-    outline = outline, outlineVariant = outlineVariant
-)

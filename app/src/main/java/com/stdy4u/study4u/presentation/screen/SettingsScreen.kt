@@ -374,7 +374,7 @@ private fun PomodoroSettingRow(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.width(60.dp),
-                horizontalAlignment = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             IconButton(
                 onClick = { if (value < 120) onValueChange(value + 5) }
